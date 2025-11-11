@@ -1,21 +1,35 @@
-import { createBrowserRouter } from "react-router-dom";
+import { Navigate, createBrowserRouter } from "react-router-dom";
 import App from "./App";
+import Protected from "./components/Protected";
+import Login from "./pages/Login";
 import ProductsList from "./pages/ProductsList";
-
-const Placeholder = ({ text }: { text: string }) => (
-    <div className="p-4">{text}</div>
-);
+import ProductDetail from "./pages/ProductDetail";
+import ProductCreate from "./pages/ProductCreate";
+import TxnForm from "./pages/TxnForm";
+import Admin from "./pages/Admin";
 
 export const router = createBrowserRouter([
-    {
-        path: "/",
+  { path: "/login", element: <Login /> },
+  {
+    path: "/",
+    element: <Protected />,
+    children: [
+      {
         element: <App />,
         children: [
-            { index: true, element: <Placeholder text="Login (임시)" /> },
-            { path: "products", element: <ProductsList /> },
-            { path: "products/:id", element: <Placeholder text="Product Detail" /> },
-            { path: "products/create", element: <Placeholder text="Product Create" /> },
-            { path: "admin", element: <Placeholder text="Admin" /> },
+          { index: true, element: <Navigate to="products" replace /> },
+          { path: "products", element: <ProductsList /> },
+          { path: "products/create", element: <ProductCreate /> },
+          { path: "products/:id", element: <ProductDetail /> },
+          { path: "inbound", element: <TxnForm mode="in" /> },
+          { path: "outbound", element: <TxnForm mode="out" /> },
+          { path: "adjust", element: <TxnForm mode="adj" /> },
+          {
+            element: <Protected roles={["admin"]} />,
+            children: [{ path: "admin", element: <Admin /> }],
+          },
         ],
-    },
+      },
+    ],
+  },
 ]);
