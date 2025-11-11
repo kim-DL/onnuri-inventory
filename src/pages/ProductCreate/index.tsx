@@ -1,4 +1,4 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { readFileAsDataUrl } from "@/lib/file";
 import { useInventoryStore } from "@/store/inventory";
@@ -22,6 +22,8 @@ export default function ProductCreate() {
     zone: zones[0],
     exp: "",
   });
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const albumInputRef = useRef<HTMLInputElement>(null);
 
   const handleFile = async (file?: File) => {
     if (!file) return;
@@ -37,7 +39,7 @@ export default function ProductCreate() {
     }
     const qty = Number(form.qty);
     if (!Number.isFinite(qty) || qty < 0) {
-      setError("수량은 0 이상의 숫자여야 합니다.");
+      setError("수량은 0 이상 숫자여야 합니다.");
       return;
     }
     setSaving(true);
@@ -68,24 +70,46 @@ export default function ProductCreate() {
       </header>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="space-y-2 rounded-3xl bg-white border border-slate-200 p-4">
+        <div className="space-y-3 rounded-3xl bg-white border border-slate-200 p-4">
           <p className="text-sm font-semibold text-slate-700">썸네일</p>
-          <label className="flex items-center gap-3">
-            <div className="w-20 h-20 rounded-2xl bg-slate-100 overflow-hidden">
+          <div className="flex items-center gap-4">
+            <button
+              type="button"
+              onClick={() => cameraInputRef.current?.click()}
+              className="relative w-32 h-32 rounded-2xl bg-slate-100 overflow-hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-slate-400"
+            >
               {thumb ? (
-                <img src={thumb} alt="미리보기" className="w-full h-full object-cover" />
+                <img src={thumb} alt="미리보기" className="h-full w-full object-cover" />
               ) : (
-                <div className="grid h-full place-items-center text-[12px] text-slate-400">이미지</div>
+                <div className="grid h-full place-items-center text-[12px] text-slate-400">카메라</div>
               )}
-            </div>
-            <input
-              type="file"
-              accept="image/*"
-              capture="environment"
-              onChange={(e) => handleFile(e.target.files?.[0])}
-              className="text-sm text-slate-500"
-            />
-          </label>
+              <span className="absolute bottom-2 left-1/2 -translate-x-1/2 rounded-full bg-black/60 px-3 py-0.5 text-[11px] font-semibold text-white">
+                촬영
+              </span>
+            </button>
+            <button
+              type="button"
+              onClick={() => albumInputRef.current?.click()}
+              className="h-11 flex-1 rounded-2xl border border-slate-200 text-sm font-semibold text-slate-700"
+            >
+              앨범에서 선택
+            </button>
+          </div>
+          <input
+            ref={cameraInputRef}
+            type="file"
+            accept="image/*"
+            capture="environment"
+            className="hidden"
+            onChange={(e) => handleFile(e.target.files?.[0])}
+          />
+          <input
+            ref={albumInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => handleFile(e.target.files?.[0])}
+          />
         </div>
 
         <div className="space-y-2 rounded-3xl bg-white border border-slate-200 p-4">
@@ -184,7 +208,7 @@ export default function ProductCreate() {
         </button>
       </form>
       <p className="text-[12px] text-center text-slate-400">
-        등록 후에도 입/출고 및 조정 메뉴에서 언제든 수량을 변경할 수 있습니다.
+        등록 후에도 입고/출고/조정 메뉴에서 다시 수정할 수 있습니다.
       </p>
     </div>
   );

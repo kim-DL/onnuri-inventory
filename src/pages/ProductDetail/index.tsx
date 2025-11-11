@@ -10,6 +10,7 @@ export default function ProductDetail() {
   const navigate = useNavigate();
   const products = useInventoryStore((state) => state.products);
   const txns = useInventoryStore((state) => state.txns);
+  const [previewOpen, setPreviewOpen] = useState(false);
 
   const product = useMemo(() => products.find((p) => p.id === id), [products, id]);
   const recent = useMemo(
@@ -40,13 +41,17 @@ export default function ProductDetail() {
   return (
     <div className="px-4 py-3 max-w-[480px] mx-auto pb-28 space-y-3">
       <div className="flex items-center gap-3 p-4 bg-white rounded-2xl border border-slate-200">
-        <div className="w-20 h-20 rounded-2xl bg-slate-100 overflow-hidden">
+        <button
+          type="button"
+          className="w-20 h-20 rounded-2xl bg-slate-100 overflow-hidden"
+          onClick={() => product.thumb && setPreviewOpen(true)}
+        >
           {product.thumb ? (
             <img src={product.thumb} alt={product.name} className="w-full h-full object-cover" />
           ) : (
             <div className="grid h-full place-items-center text-[12px] text-slate-400">No Img</div>
           )}
-        </div>
+        </button>
         <div className="flex-1 min-w-0">
           <p className="text-[18px] font-semibold text-slate-900 leading-tight line-clamp-2">{product.name}</p>
         </div>
@@ -132,6 +137,18 @@ export default function ProductDetail() {
           </button>
         </div>
       </div>
+
+      {previewOpen && product.thumb && (
+        <button
+          type="button"
+          onClick={() => setPreviewOpen(false)}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm"
+        >
+          <div className="max-w-[90vw] max-h-[90vh] rounded-3xl overflow-hidden border border-white/50 shadow-2xl">
+            <img src={product.thumb} alt={product.name} className="h-full w-full object-contain" />
+          </div>
+        </button>
+      )}
     </div>
   );
 }
