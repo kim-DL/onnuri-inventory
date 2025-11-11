@@ -151,7 +151,7 @@ export default function ProductsList() {
             const meta = [product.manufacturer, product.unit, product.spec].filter(Boolean).join(" · ");
             return (
               <Link key={product.id} to={`/products/${product.id}`} className="block">
-                <div className="flex items-center gap-3 p-3 bg-white border border-slate-200 rounded-2xl">
+                <div className="grid grid-cols-[auto,1fr,auto] items-center gap-3 p-3 bg-white border border-slate-200 rounded-2xl">
                   {/* 썸네일 */}
                   <div className="w-14 h-14 rounded-xl bg-slate-100 overflow-hidden">
                     {product.thumbUrl ? (
@@ -162,13 +162,17 @@ export default function ProductsList() {
                   </div>
 
                   {/* 가운데 열 */}
-                  <div className="flex-1 min-w-0">
+                  <div className="min-w-0">
                     <p className="text-[16px] font-semibold text-slate-900 leading-tight line-clamp-2">{product.name}</p>
 
-                    {/* 2행: 메타텍스트와 D-배지를 같은 줄에 인라인 배치 */}
-                    <div className="mt-1 flex items-center gap-2 text-[13px] text-slate-600">
-                      <span className="min-w-0 truncate">{meta}</span>
-                      <ExpiryBadge exp={product.exp} />
+                    {/* 2행: 메타텍스트 옆에 D-배지를 밀착 배치 */}
+                    <div className="mt-1 text-[13px] text-slate-600">
+                      <span className="inline-flex w-full min-w-0 items-center gap-1">
+                        <span className="min-w-0 truncate">{meta}</span>
+                        <span className="shrink-0">
+                          <ExpiryBadge exp={product.exp} />
+                        </span>
+                      </span>
                     </div>
                   </div>
 
